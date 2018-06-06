@@ -1,11 +1,17 @@
 package main
 
 import (
-	"chb-learning/model"
 	"fmt"
+	"grass/chb-learning/model"
+
+	"gopkg.in/gocb"
 )
 
 func main() {
+
+	cluster, _ := gocb.Connect("couchbase://http://IP")
+	bucket, _ := cluster.OpenBucket("user", "password")
+
 	user := model.User{
 		UserName: "Tom",
 		PassWord: "123456789",
@@ -22,7 +28,7 @@ func main() {
 	for testR, u := range s.Users {
 		id = id + 1
 		fmt.Println("testR:", testR)
-		model.Insert(fmt.Sprintf("%d", id), u)
+		model.Insert(bucket, fmt.Sprintf("%d", id), u)
 	}
 
 	//for k := 0; k < s.Users(); k++ {
@@ -32,7 +38,7 @@ func main() {
 
 	//model.Insert(string(id), user)
 	model.OpsJSON("user.json", "parse")
-	model.Select()
+	model.Select(bucket)
 	//model.Data2JSON("", "h.json")
 	//select {}
 }

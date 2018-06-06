@@ -8,7 +8,6 @@ import (
 	"gopkg.in/gocb"
 )
 
-
 type User struct {
 	UserName string
 	PassWord string
@@ -42,9 +41,8 @@ type UserList struct {
 //}
 
 //Insert  Insert data to bcouchabse
-func Insert(ID string, user User) error {
-	cluster, _ := gocb.Connect("couchbase://IP")
-	bucket, _ := cluster.OpenBucket("user", "password")
+func Insert(bucket *gocb.Bucket, ID string, user User) error {
+
 	str, err := json.Marshal(user)
 	if err != nil {
 		return err
@@ -66,9 +64,7 @@ func Insert(ID string, user User) error {
 	return err
 }
 
-func Select() {
-	cluster, _ := gocb.Connect("couchbase://IP")
-	bucket, _ := cluster.OpenBucket("user", "password")
+func Select(bucket *gocb.Bucket) interface{} {
 
 	myQuery := gocb.NewN1qlQuery("SELECT * FROM hua")
 	rows, err := bucket.ExecuteN1qlQuery(myQuery, nil)
@@ -88,7 +84,7 @@ func Select() {
 	}
 
 	_ = bucket.Close()
-
+	return rows
 }
 
 //OpsJSON operate json data
@@ -130,4 +126,17 @@ func parseJSON(path string) error {
 	fmt.Printf("%T", u)
 	fmt.Println()*/
 	return nil
+}
+
+func map2json(chbResult []map[string]interface{}, filename string) error {
+	body, err := json.MarshalIndent(chbResult, "", "    ")
+	if err != nil {
+		fmt.Println("json.Marshal failed:", err)
+		return err
+	}
+	err = ioutil.WriteFile(filename, body, 0644)
+	if err != nil {
+		return err
+	}
+	return err
 }
