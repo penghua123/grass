@@ -28,7 +28,7 @@ func NewEventJson(jsonbytes []byte)(event *Event){
 
 
 func main(){
-    bucket,err :=couchbase.GetBucket("http://hua:penghua@10.15.158.52:8091/","default","hua")
+    bucket,err :=couchbase.GetBucket("http://hua:penghua@IP:8091/","default","bucket")
     if err !=nil {
         fmt.Println(err)
     }
