@@ -1,0 +1,12 @@
+git clone https://github.com/penghua123/grass.git
+cd grass
+echo "# GO learning class" >> README.md
+git init
+git config --list
+git config --local user.name "penghua"
+git config --local user.email "710159804@qq.com"
+
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/penghua123/grass.git
+git push -u origin master

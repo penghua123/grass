@@ -1,1 +1,1 @@
-# GO learning class
+# Go learning

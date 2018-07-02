@@ -1,13 +1,14 @@
 package main
 
 import (
+	"grass/jsonapi/model"
 	"log"
 	"net/http"
 )
 
 func main() {
 
-	router := NewRouter()
+	router := model.NewRouter()
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

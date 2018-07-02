@@ -23,8 +23,9 @@ type Vc struct {
 
 func main() {
 	ctx, _ := context.WithCancel(context.Background())
-	vcen := Vc{Host: "IP", Username: "user", Password: "password", Port: "443"}
-	url := "https://" + vcen.Username + ":" + vcen.Password + "@" + vcen.Host + "/sdk"
+	//vcen := Vc{Host: "10.138.", Username: "user", Password: "password", Port: "443"}
+	url := "https://administrator@vsphere.local:Admin!23@10.138.0.218/sdk"
+	//"https://" + vcen.Username + ":" + vcen.Password + "@" + vcen.Host + "/sdk"
 	fmt.Println(url)
 	u, err := soap.ParseURL(url)
 	c, err := govmomi.NewClient(ctx, u, true)
@@ -54,7 +55,7 @@ func main() {
 
 	// Print summary per vm (see also: govc/vm/info.go)
 
-	for _, vm := range vms {
+	for _, vm := range vms[0:2] {
 		fmt.Printf("%s: %s\n", vm.Summary.Config.Name, vm.Summary.Config.GuestFullName)
 	}
 

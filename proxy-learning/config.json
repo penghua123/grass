@@ -1,0 +1,13 @@
+{
+    "port" : "8081",
+    "proxy": [
+        {
+              "path": "/api",
+              "host": "http://www.google.com/api"
+        },
+        {
+               "path": "/",
+               "host": "http://www.vmware.com/touch"
+        }
+     ]
+}
