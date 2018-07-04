@@ -8,11 +8,14 @@ import (
 	"os"
 	"text/tabwriter"
 
+	"github.com/vmware/govmomi/event"
+
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/units"
 	"github.com/vmware/govmomi/view"
 	"github.com/vmware/govmomi/vim25/mo"
 	"github.com/vmware/govmomi/vim25/soap"
+	"github.com/vmware/govmomi/vim25/types"
 )
 
 func main() {
@@ -90,5 +93,13 @@ func main() {
 	}
 
 	_ = tw.Flush()
-
+	fmt.Println("#######################################")
+	//m1 := event.NewManager(c.Client)
+	ref := types.ManagedObjectReference{"type", "char"}
+	//ref := m1.Common.Reference()
+	historyCollect := event.NewHistoryCollector(c.Client, ref)
+	//baseEvent, err := historyCollect.LatestPage(ctx)
+	//fmt.Println(baseEvent)
+	baseEvent, err := historyCollect.ReadNextEvents(ctx, 10)
+	fmt.Println(baseEvent)
 }
