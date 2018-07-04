@@ -7,10 +7,10 @@ import (
 	"log"
 	"os"
 	"text/tabwriter"
-
-	"github.com/vmware/govmomi/event"
+	"time"
 
 	"github.com/vmware/govmomi"
+	"github.com/vmware/govmomi/event"
 	"github.com/vmware/govmomi/units"
 	"github.com/vmware/govmomi/view"
 	"github.com/vmware/govmomi/vim25/mo"
@@ -94,12 +94,46 @@ func main() {
 
 	_ = tw.Flush()
 	fmt.Println("#######################################")
-	//m1 := event.NewManager(c.Client)
-	ref := types.ManagedObjectReference{"type", "char"}
+	m1 := event.NewManager(c.Client)
+	/*ref := types.ManagedObjectReference{"type", "char"}
 	//ref := m1.Common.Reference()
 	historyCollect := event.NewHistoryCollector(c.Client, ref)
 	//baseEvent, err := historyCollect.LatestPage(ctx)
 	//fmt.Println(baseEvent)
 	baseEvent, err := historyCollect.ReadNextEvents(ctx, 10)
-	fmt.Println(baseEvent)
+	fmt.Println(baseEvent)*/
+	end := time.Now()
+	start := end.AddDate(0, -1, 0)
+	fmt.Println(start)
+	fmt.Println(end)
+	filter := types.EventFilterSpec{
+		Time: &types.EventFilterSpecByTime{
+			BeginTime: &start,
+			EndTime:   &end,
+		},
+		UserName: &types.EventFilterSpecByUsername{
+			SystemUser: false,
+		},
+		EventTypeId: []string{
+			"com.vmware.license.AddLicenseEvent",
+			"com.vmware.license.AssignLicenseEvent",
+			"VmCreatedEvent",
+			"VmMigratedEvent",
+			"VmPoweredOffEvent",
+			"VmPoweredOnEvent",
+			"VmRelocatedEvent",
+			"VmSuspendedEvent",
+		},
+		MaxCount: 200,
+	}
+
+	historyCollect, err := m1.CreateCollectorForEvents(ctx, filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	event, err := historyCollect.ReadNextEvents(ctx, 20)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(event)
 }
