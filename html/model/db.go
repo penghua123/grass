@@ -24,6 +24,19 @@ func Registor(db *sql.DB, username, password string) error {
 }
 
 func Update(db *sql.DB, username, newPassword string) error {
-	sStmt := fmt.Sprintf()
+	sStmt := fmt.Sprintf(`UPDATE "User" SET "password" = newPassword WHERE "username" = username`)
+	_, err := db.Exec(sStmt)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
+}
 
+func Delete(db *sql.DB, username string) error {
+	sStmt := fmt.Sprintf(`DELETE FROM "User" WHERE "username" = username`)
+	_, err := db.Exec(sStmt)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
 }
