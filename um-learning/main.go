@@ -37,8 +37,6 @@ func main() {
 		fmt.Println(err)
 	}
 
-	defer c.Logout(ctx)
-
 	// Create view of VirtualMachine objects
 	m := view.NewManager(c.Client)
 
@@ -94,14 +92,52 @@ func main() {
 
 	_ = tw.Flush()
 	fmt.Println("#######################################")
+	v3, err := m.CreateContainerView(ctx, c.ServiceContent.RootFolder, []string{"Datastore"}, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Retrieve summary property for all datastores
+	// Reference: http://pubs.vmware.com/vsphere-60/topic/com.vmware.wssdk.apiref.doc/vim.Datastore.html
+	var dss []mo.Datastore
+	err = v3.Retrieve(ctx, []string{"Datastore"}, []string{"summary"}, &dss)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Print summary per datastore (see also: govc/datastore/info.go)
+
+	tw = tabwriter.NewWriter(os.Stdout, 2, 0, 2, ' ', 0)
+	fmt.Fprintf(tw, "Name:\tType:\tCapacity:\tFree:\n")
+
+	for _, ds := range dss {
+		fmt.Fprintf(tw, "%s\t", ds.Summary.Name)
+		fmt.Fprintf(tw, "%s\t", ds.Summary.Type)
+		fmt.Fprintf(tw, "%s\t", units.ByteSize(ds.Summary.Capacity))
+		fmt.Fprintf(tw, "%s\t", units.ByteSize(ds.Summary.FreeSpace))
+		fmt.Fprintf(tw, "\n")
+	}
+
+	_ = tw.Flush()
+	fmt.Println("#############################################")
+	v4, err := m.CreateContainerView(ctx, c.ServiceContent.RootFolder, []string{"Network"}, true)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Reference: http://pubs.vmware.com/vsphere-60/topic/com.vmware.wssdk.apiref.doc/vim.Network.html
+	var networks []mo.Network
+	err = v4.Retrieve(ctx, []string{"Network"}, nil, &networks)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, net := range networks {
+		fmt.Printf("%s: %s\n", net.Name, net.Reference())
+	}
+
+	fmt.Println("#############################################")
 	m1 := event.NewManager(c.Client)
-	/*ref := types.ManagedObjectReference{"type", "char"}
-	//ref := m1.Common.Reference()
-	historyCollect := event.NewHistoryCollector(c.Client, ref)
-	//baseEvent, err := historyCollect.LatestPage(ctx)
-	//fmt.Println(baseEvent)
-	baseEvent, err := historyCollect.ReadNextEvents(ctx, 10)
-	fmt.Println(baseEvent)*/
 	end := time.Now()
 	start := end.AddDate(0, -1, 0)
 	fmt.Println(start)
@@ -131,9 +167,21 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	event, err := historyCollect.ReadNextEvents(ctx, 20)
+	events1, err := historyCollect.ReadNextEvents(ctx, 20)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(event)
+	fmt.Println(events1)
+
+	fmt.Println("#############################################")
+	ref := types.ManagedObjectReference{
+		Type:  "Folder",
+		Value: "group-d1",
+	}
+	historyCollect1 := event.NewHistoryCollector(c.Client, ref)
+	events2, err := historyCollect1.LatestPage(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(events2)
 }
