@@ -33,6 +33,13 @@ func writer(queue <-chan int, signal <-chan int) {
 	var wg sync.WaitGroup
 	threads := 100
 	for j < threads {
+
+		_, ok := <-signal
+		if !ok {
+			fmt.Println("Received the stop signal")
+			wg.Wait()
+			break
+		}
 		wg.Add(1)
 		go func(queue <-chan int) {
 			defer wg.Done()
@@ -48,13 +55,8 @@ func writer(queue <-chan int, signal <-chan int) {
 		//if docNum > 999 {
 		//	break
 		//}
-		_, ok := <-signal
-		//if sig == docNum {
-		if !ok {
-			fmt.Println("Received the stop signal")
-			wg.Wait()
-			break
-		}
+		//_, ok := <-signal
+		//if sig == docNum
 	}
 	fmt.Println("Received document is", docNum)
 }
