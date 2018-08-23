@@ -16,8 +16,6 @@ func main() {
 			case os.Interrupt, os.Kill:
 				fmt.Println("退出", s)
 				exitFunc()
-			default:
-				fmt.Println("other", s)
 			}
 		}
 	}()
