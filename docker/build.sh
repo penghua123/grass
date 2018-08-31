@@ -62,7 +62,7 @@ else
     # Postgres container need extra 5 seconds to accomplish initialization.
     sleep 5
     docker cp $SQL_FILE $CONTAINER:/usr/share/
-    docker exec -it $CONTAINER /bin/sh -c 'psql -U postgres < /usr/share/usgmtr.sql'
+    docker exec -it $CONTAINER /bin/sh -c 'psql -U usgmtr < /usr/share/usgmtr.sql'
     docker exec -it $CONTAINER /bin/sh -c 'rm /usr/share/usgmtr.sql'
 fi
 echo "Import tables structure to database $POSTGRES_DB successfully." 
