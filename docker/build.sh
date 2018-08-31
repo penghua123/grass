@@ -2,9 +2,9 @@
 usage()
 {
     filename=$(basename $0)
-    echo "Usage:   $filename -c \"local\""
+    echo "Usage:   $filename -c \"l\""
     echo "         $filename -h | --help"
-    echo "         -c --client  : which client to build the environment"
+    echo "         -c --client  : which client to build the environment,l means local,d means docker"
     echo "         -h --help    : Help usage"
     exit 1
 }
