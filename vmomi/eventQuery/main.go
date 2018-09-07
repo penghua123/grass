@@ -39,6 +39,13 @@ func main() {
 		log.Fatal(err)
 	}
 	data2JSON(events, "nonSystemUser.json")
+
+	filter = eventFilterSpec(true)
+	events, err = m.QueryEvents(ctx, filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+	data2JSON(events, "systemUser.json")
 }
 
 func eventFilterSpec(systemUser bool) types.EventFilterSpec {
