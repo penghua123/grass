@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 
-	"github.com/vmware/govmomi/property"
-
 	"github.com/vmware/govmomi"
 	"github.com/vmware/govmomi/view"
 	"github.com/vmware/govmomi/vim25"
@@ -35,7 +33,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p := property.DefaultCollector(sc)
+	/*p := property.DefaultCollector(sc)
+
 	var dst interface{}
 	v := view.NewContainerView(sc, p.Reference())
 	err = v.Retrieve(ctx, []string{"VirtualMachine"}, []string{"config.product.fullName"}, &dst)
@@ -48,10 +47,19 @@ func main() {
 	if err != nil {
 		fmt.Println("Retrieve has error!!!", err)
 	}
-	data2JSON(vms, "view.vms.json")
+	data2JSON(vms, "view.vms.json")*/
 
-	//m := view.NewManager(sc)
-	//cv := m.CreateContainerView(ctx, container types.ManagedObjectReference, managedObjectTypes []string, recursive bool)
+	m := view.NewManager(sc)
+	cv, err := m.CreateContainerView(ctx, c.ServiceContent.RootFolder, []string{"VirtualMachine"}, true)
+	if err != nil {
+		fmt.Println(err)
+	}
+	var vms2 []mo.VirtualMachine
+	err = cv.Retrieve(ctx, []string{"VirtualMachine"}, []string{"guest.hostName", "guest.ipAddress", "runtime.bootTime", "runtime.host", "runtime.powerState", "summary.config.cpuReservation", "summary.config.memorySizeMB", "summary.config.guestFullName", "summary.vm", "summary.config.name"}, &vms2)
+	if err != nil {
+		fmt.Println(err)
+	}
+	data2JSON(vms2, "view.cvVms.json")
 }
 
 func data2JSON(v interface{}, filename string) error {
