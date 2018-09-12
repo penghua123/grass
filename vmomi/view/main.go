@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"github.com/vmware/govmomi"
+	"github.com/vmware/govmomi/property"
 	"github.com/vmware/govmomi/view"
 	"github.com/vmware/govmomi/vim25"
 	"github.com/vmware/govmomi/vim25/mo"
@@ -17,7 +18,7 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	uri := "https://administrator@vsphere.local:Admin!23@10.160.164.46"
+	uri := "https://admin:Admin!23@10.32.51.156"
 	u, err := soap.ParseURL(uri)
 	if err != nil {
 		log.Fatal(err)
@@ -33,10 +34,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*p := property.DefaultCollector(sc)
-
-	var dst interface{}
-	v := view.NewContainerView(sc, p.Reference())
+	p := property.DefaultCollector(sc)
+	fmt.Println("The p result:", p.Reference())
+	fmt.Println("The c result:", c.ServiceContent.RootFolder)
+	/*var dst interface{}
+	v := view.NewContainerView(sc, c.ServiceContent.RootFolder)
 	err = v.Retrieve(ctx, []string{"VirtualMachine"}, []string{"config.product.fullName"}, &dst)
 	if err != nil {
 		fmt.Println("Retrieve has error!!!", err)
