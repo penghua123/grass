@@ -44,11 +44,8 @@ func saveNewsDB(newsChan chan news, wSaveOk *sync.WaitGroup) {
 	}
 	defer db.Close()
 	for e := range newsChan {
-		res, err := db.Prepare("INSERT INTO news (title,url) VALUES (?,?)")
-		if err != nil {
-			log.Fatal(err)
-		}
-		_, err = res.Exec(e.title, e.url)
+		stmt = fmt.Sprintf("INSERT INTO news (title,url) VALUES ($1,$2)")
+		_, err = db.Exec(stmt, e.title, e.url)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -81,30 +78,30 @@ func getBaiduNews(offset chan int, newsChan chan news, wGetOk *sync.WaitGroup) {
 		req.Header.Add("upgrade-insecure-requests", "1")
 		req.Header.Add("user-agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/64.0.3282.119 Chrome/64.0.3282.119 Safari/537.36")
 		req.Header.Add("postman-token", "0b307632-c6ae-bb88-6a78-cb196aa43b4e")
-		res, error := http.DefaultClient.Do(req)
-		if nil == error && 200 == res.StatusCode {
-			bytes, e := ioutil.ReadAll(res.Body)
-			if nil == e {
-				info := string(bytes)
-				if strings.Contains(info, "\"errNo\": \"0\"") {
-					info := strings.Split(strings.
-						Split(info, "\",\"isEnd\": \"0\",")[0], "{\"errNo\": \"0\",\"html\" : \"")[1]
-					nodes, parseError := goquery.Parse(strings.NewReader(info))
-					if nil == parseError {
-						nodes.Find("a.s-title-yahei").Each(func(index int, element *goquery.Node) {
-							var new news
-							for _, v := range element.Node.Attr {
-								if v.Key == "data-title" {
-									new.title = v.Val
-								}
-								if v.Key == "data-link" {
-									new.url = v.Val
-								}
+		res, err := http.DefaultClient.Do(req)
+		if err == nil && res.StatusCode == 200 {
+			bytes, err := ioutil.ReadAll(res.Body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			info := string(bytes)
+			if strings.Contains(info, "\"errNo\": \"0\"") {
+				info := strings.Split(strings.Split(info, "\",\"isEnd\": \"0\",")[0], "{\"errNo\": \"0\",\"html\" : \"")[1]
+				nodes, parseError := goquery.Parse(strings.NewReader(info))
+				if parseError == nil {
+					nodes.Find("a.s-title-yahei").Each(func(index int, element *goquery.Node) {
+						var new news
+						for _, v := range element.Node.Attr {
+							if v.Key == "data-title" {
+								new.title = v.Val
 							}
-							newsChan <- new
-							fmt.Println(new)
-						})
-					}
+							if v.Key == "data-link" {
+								new.url = v.Val
+							}
+						}
+						newsChan <- new
+						fmt.Println(new)
+					})
 				}
 			}
 		}
@@ -124,7 +121,7 @@ func main() {
 		}
 		count = int(size)
 	}
-	if 0 == count {
+	if count == 0 {
 		count = 10
 	}
 
