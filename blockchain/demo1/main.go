@@ -7,7 +7,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
@@ -74,8 +73,9 @@ func replaceChain(newBlocks []Block) {
 
 func run() error {
 	mux := makeMuxRouter()
-	httpAddr := os.Getenv("ADDR")
-	log.Println("Listening on ", os.Getenv("ADDR"))
+	//httpAddr := os.Getenv("ADDR")
+	//log.Println("Listening on ", os.Getenv("ADDR"))
+	httpAddr := "8003"
 	s := &http.Server{
 		Addr:           ":" + httpAddr,
 		Handler:        mux,
@@ -83,7 +83,8 @@ func run() error {
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-	if err := s.ListenAndServe(); err != nil {
+	err := s.ListenAndServe()
+	if err != nil {
 		return err
 	}
 	return nil
