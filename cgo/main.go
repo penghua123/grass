@@ -1,12 +1,12 @@
 package main
 
 import (
-	"net/http"
-	"cgo/cgo"
-	"time"
+	"grass/cgo/cgo"
+	"grass/cgo/controller"
+	_ "grass/cgo/session"
 	"log"
-	"cgo/controller"
-	_ "cgo/session"
+	"net/http"
+	"time"
 )
 
 func main() {
@@ -15,13 +15,13 @@ func main() {
 	cgo.CreateTable()
 
 	server := &http.Server{
-		Addr:":8080",
-		Handler:cgo.Router,
+		Addr:        ":8080",
+		Handler:     cgo.Router,
 		ReadTimeout: 5 * time.Second,
 	}
 	RegiterRouter(cgo.Router)
 	err := server.ListenAndServe()
-	if err != nil{
+	if err != nil {
 		log.Panic(err)
 	}
 }
