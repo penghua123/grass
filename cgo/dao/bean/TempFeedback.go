@@ -1,9 +1,8 @@
 package bean
 
-import "cgo/entity"
+import "grass/cgo/entity"
 
 type TempFeedback struct {
 	entity.Feedback
 	entity.Picture
 }
-
