@@ -55,15 +55,15 @@ func saveNewsDB(newsChan chan news, wSaveOk *sync.WaitGroup) {
 
 var count int64
 
-func getBaiduNews(offset chan int, newsChan chan news, wGetOk *sync.WaitGroup) {
+func getBaiduNews(index chan int, newsChan chan news, wGetOk *sync.WaitGroup) {
 	for {
-		index, ok := <-offset
+		offset, ok := <-index
 		if !ok {
 			break
 		}
 		var stringBuffer bytes.Buffer
 		stringBuffer.WriteString("https://www.baidu.com/home/pcweb/data/mancardwater?id=2&offset=")
-		stringBuffer.WriteString(strconv.Itoa(index))
+		stringBuffer.WriteString(strconv.Itoa(offset))
 		stringBuffer.WriteString("&sessionId=15180565112719&crids=&version=&pos=52&newsNum=52&blacklist_timestamp=0&indextype=manht&_req_seqid=0xab0aac7f0000ef5d&asyn=1&t=1518056583617&sid=1428_21082_20719")
 		url := stringBuffer.String()
 		payload := strings.NewReader("params=lKyJiYt65SeTS%252BaO4ZqdonwEyY%252BSzr7oFr8kEpP8j0H%252FqMMPELQv9UibydyQRz10kcdSQHQmgvca2yvKfGSX5R%252BU8ByLp6rS4CRiH%252B%252FYxok%253D%26&encSecKey=1dd9fd1745dae8af1c0a678baf62803becdabb6685b9cf756ce101accb9daa291f408a848e84d83a344fe98db6d3ea2abf63a278f98191c4234bd201a5bbfba1faadc509bacde313e693ecf0aceace909b5e8a168be20e34b0eef3640a45b075a6b4c1ff581cea91debaa69d125326e218d09bb01cc490ad09fe5c1d24746047")

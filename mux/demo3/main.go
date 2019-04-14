@@ -20,11 +20,10 @@ func Run() {
 	r := mux.NewRouter()
 	// 指定host
 	r.HandleFunc("/host", HostHandler).Host("localhost")
-	// 带变量的url路由
 	http.ListenAndServe(":3000", r)
 }
 
 func HostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "the host is localhost")
+	fmt.Fprintf(w, "the host is www.example.com")
 }

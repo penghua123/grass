@@ -10,5 +10,6 @@ func main() {
     for i := 0; i < 1000; i++ {
         buffer.WriteString("a")
     }
-    fmt.Println(buffer.String())
+	fmt.Println(buffer.String())
+	buffer.ReadString
 }

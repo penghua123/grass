@@ -12,7 +12,7 @@ type FeedbackDao struct {
 }
 
 func (p *FeedbackDao) Insert(feedback *entity.Feedback) int64 {
-	result, err := cgo.DB.Exec("INSERT INTO feedback(`user_id`,`title`,`content`,`create_time`) VALUE(?,?,?,?)", feedback.UserID, feedback.Title, feedback.Content, feedback.CreateTime)
+	result, err := cgo.DB.Exec("INSERT INTO feedback(`user_id`,`title`,`content`,`create_time`) VALUE($1,$2,$3,$4)", feedback.UserID, feedback.Title, feedback.Content, feedback.CreateTime)
 	if err != nil {
 		log.Println(err)
 		return 0
@@ -26,7 +26,7 @@ func (p *FeedbackDao) Insert(feedback *entity.Feedback) int64 {
 }
 
 func (p *FeedbackDao) SelectFeedbackByUserId(id uint) []*model.FeedbackResp {
-	rows, err := cgo.DB.Query("SELECT * FROM feedback f,picture p WHERE f.user_id = ? AND f.id = p.feedback_id", id)
+	rows, err := cgo.DB.Query("SELECT * FROM feedback f,picture p WHERE f.user_id = $1 AND f.id = p.feedback_id", id)
 	if err != nil {
 		log.Println(err)
 		return nil
